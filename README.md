@@ -42,7 +42,7 @@ nmap --script smb-protocols -p445 192.168.190.144
 negotiation issue), so I switched to `netexec` for the actual brute-force.
 The `nmap` scan confirms port 445 open and lists supported SMB dialects.
 
-📷 `01-kali-recon-and-wordlists.png`
+📷 ![Kali recon and wordlist prep](01-kali-recon-and-wordlists.png)
 
 ---
 
@@ -52,7 +52,8 @@ The `nmap` scan confirms port 445 open and lists supported SMB dialects.
 sudo apt install netexec -y
 ```
 
-📷 `02-kali-tool-install-netexec.png`
+📷 ![Installing netexec on Kali](02-kali-tool-install-netexec.png)
+
 
 ---
 
@@ -67,7 +68,8 @@ attempts against the `administrator` account, SMB returns
 `STATUS_ACCOUNT_LOCKED_OUT` — confirming the target's account lockout policy
 kicked in.
 
-📷 `03-kali-attack-execution-lockout.png`
+📷 ![netexec SMB attack triggering lockout](03-kali-attack-execution-lockout.png)
+
 
 ---
 
@@ -78,7 +80,7 @@ for logon-related events. The log shows a burst of `Audit Failure` / Event ID
 **4625** entries at the same time as the attack, followed by an Event ID
 **4740** (account lockout).
 
-📷 `04-target-event-viewer-overview.png`
+📷 ![Event Viewer Security log overview](04-target-event-viewer-overview.png)
 
 ---
 
@@ -94,7 +96,7 @@ exact source of the attack:
 This is the key detection detail — the source IP directly ties the failed
 logons back to the attacking machine.
 
-📷 `05-target-event-4625-failed-logon.png`
+📷 ![Event 4625 failed logon detail](05-target-event-4625-failed-logon.png)
 
 ---
 
@@ -103,13 +105,12 @@ logons back to the attacking machine.
 Opened the Event ID **4740** entry — *"A user account was locked out."*
 Logged by `SYSTEM`, Task Category: **User Account Management**.
 
-📷 `06-target-event-4740-lockout-summary.png`
-
+📷![Event 4740 account lockout summary](06-target-event-4740-lockout-summary.png)
 Scrolling down in the same event shows exactly which account got locked:
 
 - **Account That Was Locked Out:** `DESKTOP-H8MNLF7\Administrator`
 
-📷 `07-target-event-4740-account-locked.png`
+📷 ![Event 4740 locked account detail](07-target-event-4740-account-locked.png)
 
 ---
 
@@ -125,7 +126,7 @@ Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4625,4740} |
 notepad "$env:USERPROFILE\Desktop\raw_events.txt"
 ```
 
-📷 `08-target-powershell-log-extraction.png`
+📷 ![PowerShell log extraction](08-target-powershell-log-extraction.png)
 
 ---
 
